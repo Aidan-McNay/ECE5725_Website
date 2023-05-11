@@ -62,7 +62,7 @@
 
       <div class="starter-template">
         <h1>Desperation Machine 2.0</h1>
-        <p class="lead">A modern Vending Machine<br>Aidan McNay, Will Barkoff</p>
+        <p class="lead">A modern vending experience<br>Aidan McNay, Will Barkoff</p>
       </div>
 
 
@@ -84,7 +84,7 @@
               end. If a product suddenly becomes popular, the owner has no way to capitalize on
               this increasing demand. Likewise, if a product becomes unpopular, the owner has no
               way to increase the incentive for consumers to purchase it by lowering the price.
-              While owners could go around and manually modify the price, this doesn't scale well
+              While owners could go around and manually modify the price in-person, this doesn't scale well
               for large systems of machines.<br><br>
               To address this issue, we propose the Desperation Machine 2.0 (named due to an inside 
               joke resulting in the vending machines in the basement of Upson Hall being christened
@@ -127,7 +127,7 @@
         <h5>Figure 1: Overall Desperation Machine 2.0 Dimensions</h5>
       </div>
       <div style="text-align:center;">
-        <p>One of the first tasks that was completed was the overall dimensioning of the vending
+        <p style="text-align: left;padding: 0px 30px;">One of the first tasks that was completed was the overall dimensioning of the vending
            machine. We knew the approximate size that we wanted just from general experience, but
            having concrete dimensions would help a lot down the road when constructing, as we
            wouldn't have to focus on design and implementation at the same time.<br><br>
@@ -148,12 +148,56 @@
         <img class="img-rounded" src="pics/ctrl_board.png" alt="Motor Controler Board Schematic" width="452" height="500">
         <h5>Figure 2: Schematic of the Motor Controller Board</h5>
       </div>
+      <div style="text-align:center;">
+        <p style="text-align: left;padding: 0px 30px;">
+          The other main drawing that we constructed was the schematic for our Motor Controller board, 
+          which hosts our 2 TB6612FNG Motor Controllers. 
+          This board serves as the main interface between the Raspberry Pi GPIO's and the motors that spin
+          the vending machine coils to dispense product. Here, we connected all of the inputs from GPIO's to
+          the needed inputs for the motor drivers (PWM signals and two binary input signals for each motor, with
+          each motor driver being capable of controlling two motors). We then connect the analog outputs to the
+          motors. Each of the GPIO inputs has a current-limiting resistor on it, to prevent any short-circuit
+          current from destroying the Raspberry Pi. In terms of power, we have V<sub>cc</sub> tied to the 3.3V
+          coming from the Raspberry Pi, and V<sub>m</sub> (our higher voltage for the motors) coming from the
+          4 AA batteries in series (generating 6V, same as the setup from Lab 3 and the one suggested by Adafruit 
+          - see <a href="#references">References</a>). Lastly, we tie the standby (STBY) pin high, so as to keep 
+          the motor drivers engaged (see <a href="#references">References</a>). By determining this schematic early,
+          it allowed us to figure out the overall design before implementation, allowing us to only have to focus on
+          one at a time.
+        </p>
+      </div>
 
     <hr id='testing'>
 
       <div style="text-align:center;">
               <h2>Testing</h2>
-              <p style="text-align: left;padding: 0px 30px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum lorem nulla, consectetur at leo vel, pretium bibendum nisl. Cras blandit quam a enim ultrices, eu convallis enim posuere. Donec eleifend enim sed purus consectetur, vitae cursus lectus varius. Vivamus consectetur felis nec est venenatis posuere. Phasellus vitae aliquet erat. In laoreet lacinia mollis. Quisque iaculis nisl fermentum pharetra lobortis. Donec rhoncus dui sem, ac molestie leo tristique vel. Phasellus in nibh feugiat, fringilla lectus in, elementum magna. Etiam quis dui condimentum, tempus ex in, dapibus est. Cras ut congue augue. Donec ac enim ex. Ut id tristique risus, vel porttitor quam. Sed ultricies enim eu nibh porttitor, vel sodales enim feugiat. Fusce volutpat venenatis magna ac ultrices. Curabitur eget urna ut nulla mattis convallis non eu diam.</p>
+              <h4>Hardware</h4>
+              <p style="text-align: left;padding: 0px 30px;">
+              For our hardware testing, our goal was fairly straightforward; make sure that the coils could
+              output the product. To do this, we developed a Python file <span style="font-family: Courier New">dispense.py</span>
+              to house our code's interface to the machine. Inside this file, we defined the GPIO's for each of
+              the signals to the motors, and based the rest of the code off of that. This allowed us to easily
+              modify our wiring with little change to the code; in fact, we discovered that our initial wiring
+              had GPIO's that were set to default high, meaning that the motor span by default even when the code
+              hadn't been run. Utilizing this agile approach allowed us to quickly swap the wiring; while our current
+              wiring uses the debug pins (active-high on boot, meaning that the motor spins for a second when we first
+              turn our system on), these pins can be turned off subsequently when booting up by disabling debug, allowing
+              our system to be idle by default.<br><br>
+              In <span style="font-family: Courier New">dispense.py</span>, we define a few helper functions to
+              initialize and cleanup our GPIO's. However, the first standalone function is <span style="font-family: Courier New">motor_test</span>.
+              This function tests each motor one by one, waiting for user input to progress to the next. This provided
+              us with a clean way to test all of our motor's functionality at once, and quickly identify and remedy
+              any initial issues (such as swapped wires). Once we'd verified the initial functionality, we could then
+              test our main application with the <span style="font-family: Courier New">dispense</span> function. This
+              function took in a slot location (any of <span style="font-family: Courier New">tr, tl, br, bl</span>, 
+              corresponding to top vs. bottom and left vs. right), and dispensed a product from that location. The
+              actuation of motors was kept separate; while we could have re-used code by changing the pins that were
+              actuated when the function was called, we decided we'd rather separate the instances to have custom amounts
+              of time that each motor was on to dispense, allowing us to observe the motors working and correct for variation
+              in construction. While the <span style="font-family: Courier New">dispense</span> function was very helpful
+              for testing, it also provided a clean interface between the software and hardware, defining the contract
+              between then (similar to an ISA) through the function. 
+              </p>
       </div>
 
     <hr id='result'>
@@ -168,8 +212,8 @@
     <div class="row" style="text-align:center;">
           <h2>Work Distribution</h2>
           <div style="text-align:center;">
-              <img class="img-rounded" src="pics/group.png" alt="Picture of ECE5725 Vending Machine Group" style="width:80%;">
-              <h4>Project group picture</h4>
+              <img class="img-rounded" src="pics/group_pic.png" alt="Picture of Aidan and Will with the Cornell Rocketry Team" style="width:40%;">
+              <h4>Project Group Members Aidan and Will (along with their Rocketry team)</h4>
           </div>
           <div class="col-md-6" style="font-size:16px">
               <img class="img-rounded" src="pics/Aidan.png" alt="Headshot of Aidan McNay" width="240" height="240">
@@ -191,16 +235,16 @@
           <ul>
               <li><a href="https://www.raspberrypi.com/products/raspberry-pi-4-model-b/">Raspberry Pi</a> - Included from Lab Setup</li>
               <li><a href="https://www.digikey.com/en/products/detail/seeed-technology-co.,-ltd/114090052/10451909">Battery Holder</a>, 4 AA Batteries - Included in Lab 3 Setup</li>
-              <li>4 <a href="https://www.digikey.com/en/products/detail/seeed-technology-co.,-ltd/114090050/10385087">DC Motor</a>s - $4.80</li>
+              <li>4 <a href="https://www.adafruit.com/product/3777">DC Motor</a>s - $11.80</li>
               <li>2 <a href="https://www.sparkfun.com/products/14451">Motor Controller</a>s - $27.00</li>
               <li><a href="https://www.amazon.com/Wideskall-Steel-Clothes-Hangers-Silver/dp/B0779L3ST4/ref=sr_1_9?keywords=Wire%2BCoat%2BHangers&qid=1683688908&sr=8-9&th=1">Wire Coat Hangers</a> - $6.99 (although we only used 4)</li>
               <li>3 <a href="https://www.lowes.com/pd/1-4-in-Lauan-Plywood-Application-as-2-x-2/1000068901">1/4"-2'-2' Lauan Sanded Plywood Panels</a> - $26.94</li>
               <li><a href="https://www.amazon.com/dp/B08PFCD1VP?psc=1&ref=ppx_yo2ov_dt_b_product_details">8-Pack 12"x12" Wood Panels</a> - $19.99</li>
               <li>Resistors/Wires/Heat Shrink/Wood Glue - Provided in lab</li>
           </ul>
-          <h3>Total: $78.73</h3>
+          <h3>Total: $85.73</h3>
       </div>
-      <hr>
+      <hr id='references'>
       <div style="font-size:18px">
           <h2>References</h2>
           <!-- <a href="https://picamera.readthedocs.io/">PiCamera Document</a><br>
@@ -209,6 +253,7 @@
           <a href="http://abyz.co.uk/rpi/pigpio/">Pigpio Library</a><br> -->
           <a href="https://sourceforge.net/p/raspberry-gpio-python/wiki/Home/">RasPi GPIO Wiki</a><br>
           <a href="https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf#page=102">BCM2835 ARM Peripherals - GPIO Default States (page 102)</a><br>
+          <a href="https://learn.sparkfun.com/tutorials/tb6612fng-hookup-guide">TB6612FNG Hookup Guide</a><br>
 
       </div>
 
