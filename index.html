@@ -116,7 +116,17 @@
 
       <div style="text-align:center;">
               <h2>Design</h2>
-              <p style="text-align: left;padding: 0px 30px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum lorem nulla, consectetur at leo vel, pretium bibendum nisl. Cras blandit quam a enim ultrices, eu convallis enim posuere. Donec eleifend enim sed purus consectetur, vitae cursus lectus varius. Vivamus consectetur felis nec est venenatis posuere. Phasellus vitae aliquet erat. In laoreet lacinia mollis. Quisque iaculis nisl fermentum pharetra lobortis. Donec rhoncus dui sem, ac molestie leo tristique vel. Phasellus in nibh feugiat, fringilla lectus in, elementum magna. Etiam quis dui condimentum, tempus ex in, dapibus est. Cras ut congue augue. Donec ac enim ex. Ut id tristique risus, vel porttitor quam. Sed ultricies enim eu nibh porttitor, vel sodales enim feugiat. Fusce volutpat venenatis magna ac ultrices. Curabitur eget urna ut nulla mattis convallis non eu diam.</p>
+              <h4>Harware</h4>
+              <p style="text-align: left;padding: 0px 30px;">
+              The hardware of the vending machine was constructed out of plywood, with varying thicknesses across the project
+              (thicker for the frame, thinner for the internal components). While previous projects similar to this have used
+              cardboard instead, we felt that plywood would make our structure more rigid and concrete, while still being
+              easily manufacturable with the use of the table saw and laser cutter available in the adjacent lab space.
+              Vending machines typically use rotating coils to dispense products; for these, we used coat hangers bent into
+              a helical shape, which provided enough rigidity to move the products. These were actuated by 4 of the DC motors
+              (controlled by 2 motor controllers) from Lab 2. These were connected to the GPIO's of our Raspberry Pi (through
+              current-limiting resistors in series), allowing our processor to fully control the operation of the vending machine.
+              </p>
       </div>
 
     <hr id='drawings'>
@@ -145,8 +155,12 @@
         </p>
       </div>
       <div style="text-align:center;">
-        <img class="img-rounded" src="pics/ctrl_board.png" alt="Motor Controler Board Schematic" width="452" height="500">
+        <img class="img-rounded" src="pics/ctrl_board.png" alt="Motor Controller Board Schematic" width="452" height="500">
         <h5>Figure 2: Schematic of the Motor Controller Board</h5>
+      </div>
+      <div style="text-align:center;">
+        <img class="img-rounded" src="pics/ctrl_board_img.png" alt="Motor Controller Board Schematic" width="452" height="339">
+        <h5>Figure 3: Completed Motor Controller Board (on a protoboard)</h5>
       </div>
       <div style="text-align:center;">
         <p style="text-align: left;padding: 0px 30px;">
@@ -200,11 +214,66 @@
               </p>
       </div>
 
+      <div style="text-align:center;">
+        <h2>Issues</h2>
+        <h4>Hardware</h4>
+        <p style="text-align: left;padding: 0px 30px;">
+          The first major issue with hardware was the warping of the wood. Given that plywood has different layers, differences
+          in the layers, specifically when exposed to moisture, will cause the layers to expand unevenly and the wood to warp
+          (hence why the wood was shipped with silica gel - to absorb any moisture). This caused issues with our overall construction;
+          we couldn't rely on our sheets to be completely flat, meaning that they may not lie well with others. This led to many struggles
+          getting the wood to bend how we wanted, but through the use of many clamps and interpretation of items around the lab as
+          weights, we got the main components to interface well. Note that this was particularly important (and difficult) for the overall
+          frame; this not only composed the main structure, but was some of the larger pieces of wood.<br><br>
+
+          Another issue, although not as significant, was the GPIO's used to control the motors. When experimenting, we realized that one
+          motor in particular would always start spinning on boot, and wouldn't stop until we ran our code to manually overwrite the GPIO
+          value. Looking into this, we discovered that the GPIO's had different default states, given by the internal pull-up or pull-down
+          resistors (see the ARM Peripherals in the <a href="#references">References</a>). However, we couldn't have all GPIO's that
+          defaulted to low, as we didn't have enough GPIO's on the Raspberry Pi to do so. As a compromise between these, we chose to use
+          the pins that are normally reserved for UART debugging (physical pins 8 and 10, GPIO's 14 and 15). While this did mean that
+          the motor would be on temporarily during boot, by disabling the debugging functionality with the 
+          <span style="font-family: Courier New">sudo raspi-config</span> command, we could make it so that the debug (and initial value
+          of high) was turned off during boot, meaning that the motor only spun for a couple seconds during this period, and remained off
+          even before code was run. While this might be seen as a bug, in real-life applications, our system would remain on for long periods
+          of time, only turning off during service, making this bug not very impactful<br><br>
+
+          Lastly, an issue that hardware found during application testing was with the strength of the motors. While our small DC motors are 
+          good for small applications, they lack the ability to give high torque. This lead to stalling with irregular coils (necessitating
+          reshaping to become more helical - they were done by hand, leading to irregularities), but also when trying to drive larger products,
+          including Welch's Fruit Snacks and CLIF bars. However, we could still have a successful functioning prototype by switching to lighter
+          products that the motors could handle, including Nutri-Grain bars, granola bars, chips, pretzels, and graham crackers. Given that
+          this system is only meant to be a prototype, and that it can still demonstrate functionality, this issue isn't huge; however, a final
+          version would need to have stronger motors (or mechanical assist through gearing ratios) to be able to dispense a wide range of
+          products.
+        </p>
+</div>
+
     <hr id='result'>
 
       <div style="text-align:center;">
               <h2>Result</h2>
-              <p style="text-align: left;padding: 0px 30px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum lorem nulla, consectetur at leo vel, pretium bibendum nisl. Cras blandit quam a enim ultrices, eu convallis enim posuere. Donec eleifend enim sed purus consectetur, vitae cursus lectus varius. Vivamus consectetur felis nec est venenatis posuere. Phasellus vitae aliquet erat. In laoreet lacinia mollis. Quisque iaculis nisl fermentum pharetra lobortis. Donec rhoncus dui sem, ac molestie leo tristique vel. Phasellus in nibh feugiat, fringilla lectus in, elementum magna. Etiam quis dui condimentum, tempus ex in, dapibus est. Cras ut congue augue. Donec ac enim ex. Ut id tristique risus, vel porttitor quam. Sed ultricies enim eu nibh porttitor, vel sodales enim feugiat. Fusce volutpat venenatis magna ac ultrices. Curabitur eget urna ut nulla mattis convallis non eu diam.</p>
+
+              <div class="col-md-6" style="font-size:16px">
+                <img class="img-rounded" src="pics/machine_2.png" alt="Overview of the Vending Machine" width="500" height="667">
+                <h5>Overall View of the Vending Machine</h5>
+              </div>
+              <div class="col-md-6">
+                <img class="img-rounded" src="pics/inside.png" alt="Internals of the Vending Machine" width="500" height="667">
+                <h5>Inside View of the Vending Machine</h5>
+              </div>
+
+              <p style="text-align: left;padding: 0px 30px;">
+                Overall, our product turned out really well! While we weren't able to implement everything our project initially
+                set out to do (such as have separate housing for the Raspberry Pi, or have self-updating rules), our proof-of-concept
+                had enough detail and functionality to still be a large success. Further projects may look to expand by implementing
+                the things that we didn't, or by exploring ways to increase the motor drive capability (such as through a driving
+                mechanism with a high gear ratio) such that larger products could be vended. The nice thing is that much of our framework
+                could be re-used for this; the Raspberry Pi connections could be fed into something else, the rule updates could be
+                worked into the code, and the motors could be taken out (as they are screwed in and replacable) to substitute for
+                a new mechanism. While we don't think our product is quite ready for the shelves just yet (especially given that users
+                could currently just take the snacks from the front &#128517;), it certainly demonstrates that such a product is viable.
+              </p>
       </div>
 
     <hr>
